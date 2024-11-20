@@ -25,7 +25,14 @@
             max-width: 50%;
         }
 
-        .notie-container {}
+        .datepicker {
+            z-index: 10000 !important;
+            position: absolute;
+        }
+
+        .swal2-actions {
+            z-index: 0;
+        }
     </style>
 </head>
 
@@ -123,6 +130,8 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
+        let attention = prompt();
+
         (function () {
             'use strict'
 
@@ -167,9 +176,132 @@
             })
         }
 
+        function prompt() {
+            let toast = function (c) {
+                const {
+                    title = "",
+                    icon = "success",
+                    position = "top-end"
+                } = c;
+
+                const Toast = Swal.mixin({
+                    toast: true,
+                    title: title,
+                    position: position,
+                    icon: icon,
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    didOpen: (toast) => {
+                        toast.onmouseenter = Swal.stopTimer;
+                        toast.onmouseleave = Swal.resumeTimer;
+                    }
+                });
+                Toast.fire({});
+            }
+            let success = function (c) {
+                const {
+                    msg = "",
+                    title = "",
+                    footer = "",
+                } = c;
+
+                Swal.fire({
+                    icon: "success",
+                    title: title,
+                    text: msg,
+                    footer: footer,
+                });
+            }
+            let error = function (c) {
+                const {
+                    msg = "",
+                    title = "",
+                    footer = "",
+                } = c;
+
+                Swal.fire({
+                    icon: "error",
+                    title: title,
+                    text: msg,
+                    footer: footer,
+                });
+            }
+
+            async function custom(c) {
+                const {
+                    msg = "",
+                    title = "",
+                } = c;
+
+                const { value: formValues } = await Swal.fire({
+                    title: title,
+                    html: msg,
+                    backdrop: false,
+                    focusConfirm: false,
+                    showCancelButton: true,
+                    willOpen: () => {
+                        const elem = document.getElementById("reservation-dates-modal");
+                        const range_picker = new DateRangePicker(elem, {
+                            format: "yyyy-mm-dd",
+                            showOnFocus: true,
+                        });
+                        const modal = Swal.getPopup();
+
+                        // Get the date picker element
+                        const datePickerElement = document.querySelector('.datepicker-picker');
+
+                        // Set the date picker position relative to the modal
+                        if (datePickerElement) {
+                            datePickerElement.style.position = 'absolute';
+                            datePickerElement.style.top = 'calc(100% + 10px)'; // Position it just below the input fields
+                            datePickerElement.style.left = '0'; // Align with the left side of the modal
+                            datePickerElement.style.zIndex = '1050'; // Ensure it's above the modal buttons
+                        }
+                    },
+                    preConfirm: () => {
+                        return [
+                            document.getElementById("start").value,
+                            document.getElementById("end").value
+                        ];
+                    },
+                    didOpen: () => {
+                        document.getElementById("start").removeAttribute("disabled")
+                        document.getElementById("end").removeAttribute("disabled")
+                    }
+                });
+                if (formValues) {
+                    Swal.fire(JSON.stringify(formValues));
+                }
+            }
+
+            return {
+                toast: toast,
+                success: success,
+                error: error,
+                custom: custom,
+            }
+        }
+
         document.getElementById("colorButton").addEventListener("click", function () {
-            // notify("Button pressed!", "info")
-            notifyModal("title", "Hello, world", "success", "MyText")
+            let html = `
+            <form id="check-availability-form" action="" method="post" novalidate class="needs-validation">
+                <div class="row">
+                    <div class="col">
+                        <div class="row" id="reservation-dates-modal">
+                            <div class="col">
+                                <input disabled required class="form-control" type="text" name="start" id="start" placeholder="Start Date">
+                            </div>
+                            <div class="col">
+                                <input disabled required class="form-control" type="text" name="end" id="end" placeholder="End Date">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            `
+            // attention.error({ msg: "Hello" })
+            attention.custom({ title: "Select dates:", msg: html })
         })
 
     </script>
