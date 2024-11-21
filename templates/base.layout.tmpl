@@ -189,22 +189,8 @@
                     focusConfirm: false,
                     showCancelButton: true,
                     willOpen: () => {
-                        const elem = document.getElementById("reservation-dates-modal");
-                        const range_picker = new DateRangePicker(elem, {
-                            format: "yyyy-mm-dd",
-                            showOnFocus: true,
-                        });
-                        const modal = Swal.getPopup();
-
-                        // Get the date picker element
-                        const datePickerElement = document.querySelector('.datepicker-picker');
-
-                        // Set the date picker position relative to the modal
-                        if (datePickerElement) {
-                            datePickerElement.style.position = 'absolute';
-                            datePickerElement.style.top = 'calc(100% + 10px)'; // Position it just below the input fields
-                            datePickerElement.style.left = '0'; // Align with the left side of the modal
-                            datePickerElement.style.zIndex = '1050'; // Ensure it's above the modal buttons
+                        if (c.willOpen !== undefined) {
+                            c.willOpen();
                         }
                     },
                     preConfirm: () => {
@@ -214,12 +200,24 @@
                         ];
                     },
                     didOpen: () => {
-                        document.getElementById("start").removeAttribute("disabled")
-                        document.getElementById("end").removeAttribute("disabled")
+                        if (c.didOpen !== undefined) {
+                            c.didOpen();
+                        }
                     }
-                });
+                })
+
                 if (formValues) {
-                    Swal.fire(JSON.stringify(formValues));
+                    if (formValues.dismiss !== Swal.DismissReason.cancel) {
+                        if (formValues.value !== "") {
+                            if (c.callback !== undefined) {
+                                c.callback(formValues);
+                            }
+                        } else {
+                            c.callback(false);
+                        }
+                    } else {
+                        c.callback(false);
+                    }
                 }
             }
 
