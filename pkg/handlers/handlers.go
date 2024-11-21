@@ -1,7 +1,9 @@
 package handlers
 
 import (
+	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/TimofteRazvan/castle-event-booker/pkg/config"
@@ -61,11 +63,26 @@ func (m *Repository) PostBooking(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(fmt.Sprintf("start date is %s and end is %s", start, end)))
 }
 
+type jsonResponse struct {
+	OK      bool   `json:"ok"`
+	Message string `json:"message"`
+}
+
 // BookingJSON handles same-page request for booking and sends JSON response
 func (m *Repository) BookingJSON(w http.ResponseWriter, r *http.Request) {
-	start := r.Form.Get("start")
-	end := r.Form.Get("end")
-	w.Write([]byte(fmt.Sprintf("start date is %s and end is %s", start, end)))
+	resp := jsonResponse{
+		OK:      true,
+		Message: "available",
+	}
+
+	out, err := json.MarshalIndent(resp, "", "    ")
+	if err != nil {
+		log.Println(err)
+	}
+
+	log.Println(string(out))
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(out)
 }
 
 // Knights is the knights page handler
