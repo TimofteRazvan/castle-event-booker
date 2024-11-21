@@ -1,0 +1,75 @@
+{{template "base" .}}
+
+{{define "content"}}
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <img src="static/images/throne.jpg" class="img-fluid img-thumbnail mx-auto d-block room-image"
+                alt="throne room image">
+        </div>
+    </div>
+    <div class="row">
+        <div class="container">
+            <h1 class="text-center mt-4">Throne Room</h1>
+            <p>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam ac turpis sit amet augue elementum
+                rutrum. Nunc
+                ut
+                ultrices ex. Fusce dolor urna, dapibus sed ipsum et, tempor consequat ligula. Cras elementum finibus
+                ante et
+                dictum.
+                Phasellus congue leo erat, ac tristique velit porttitor eu. Ut lectus nulla, malesuada sit amet
+                molestie ut,
+                vehicula a
+                enim. Pellentesque ac neque euismod, accumsan justo ac, mollis dolor. Phasellus eu tellus augue.
+                Aenean varius
+                leo
+                non
+                pulvinar aliquam. In eleifend, eros eu semper pharetra, ligula dui malesuada magna, sit amet maximus
+                nunc
+                purus in
+                neque. In ultrices velit scelerisque risus tempor, sit amet pellentesque nisi tincidunt. Aliquam
+                ante orci,
+                commodo eu
+                imperdiet et, tincidunt non libero. Aliquam dictum a massa non dapibus. Sed pulvinar, sem non luctus
+                consectetur,
+                erat
+                erat commodo justo, convallis ultrices arcu turpis a risus. Nulla finibus mi nec ante porttitor
+                imperdiet.
+            </p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col text-center">
+            <a id="check-availability-button" href="#!" class="btn btn-success">Check Availability</a>
+        </div>
+    </div>
+</div>
+
+{{end}}
+
+{{define "js"}}
+<script>
+    document.getElementById("check-availability-button").addEventListener("click", function () {
+        let html = `
+            <form id="check-availability-form" action="" method="post" novalidate class="needs-validation">
+                <div class="row">
+                    <div class="col">
+                        <div class="row" id="reservation-dates-modal">
+                            <div class="col">
+                                <input disabled required class="form-control" type="text" name="start" id="start" placeholder="Start Date">
+                            </div>
+                            <div class="col">
+                                <input disabled required class="form-control" type="text" name="end" id="end" placeholder="End Date">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            `
+        // attention.error({ msg: "Hello" })
+        attention.custom({ title: "Select dates:", msg: html })
+    })
+</script>
+{{end}}

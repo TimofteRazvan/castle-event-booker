@@ -10,6 +10,7 @@ import (
 
 	"github.com/TimofteRazvan/castle-event-booker/pkg/config"
 	"github.com/TimofteRazvan/castle-event-booker/pkg/models"
+	"github.com/justinas/nosurf"
 )
 
 const pageTmplPath = "./templates/*.page.tmpl"
@@ -24,12 +25,13 @@ func NewTemplate(a *config.AppConfig) {
 	app = a
 }
 
-func AddDefaultData(td *models.TemplateData) *models.TemplateData {
+func AddDefaultData(td *models.TemplateData, r *http.Request) *models.TemplateData {
+	td.CSRFToken = nosurf.Token(r)
 	return td
 }
 
 // RenderTemplate renders templates using html tmpl
-func RenderTemplate(w http.ResponseWriter, tmpl string, td *models.TemplateData) {
+func RenderTemplate(w http.ResponseWriter, r *http.Request, tmpl string, td *models.TemplateData) {
 	var templateCache map[string]*template.Template
 	if app.UseCache {
 		templateCache = app.TemplateCache
@@ -44,7 +46,7 @@ func RenderTemplate(w http.ResponseWriter, tmpl string, td *models.TemplateData)
 
 	buf := new(bytes.Buffer)
 
-	td = AddDefaultData(td)
+	td = AddDefaultData(td, r)
 
 	err := t.Execute(buf, td)
 	if err != nil {
