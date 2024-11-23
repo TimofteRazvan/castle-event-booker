@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/TimofteRazvan/castle-event-booker/internal/config"
+	"github.com/TimofteRazvan/castle-event-booker/internal/forms"
 	"github.com/TimofteRazvan/castle-event-booker/internal/models"
 	"github.com/TimofteRazvan/castle-event-booker/internal/render"
 )
@@ -107,5 +108,11 @@ func (m *Repository) Contact(w http.ResponseWriter, r *http.Request) {
 
 // MakeReservation is the make-reservation page handler
 func (m *Repository) MakeReservation(w http.ResponseWriter, r *http.Request) {
-	render.RenderTemplate(w, r, "make-reservation.page.tmpl", &models.TemplateData{})
+	render.RenderTemplate(w, r, "make-reservation.page.tmpl", &models.TemplateData{
+		Form: forms.New(nil),
+	})
+}
+
+// PostMakeReservation is the POST make-reservation page / form handler
+func (m *Repository) PostMakeReservation(w http.ResponseWriter, r *http.Request) {
 }
