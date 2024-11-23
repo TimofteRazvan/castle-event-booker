@@ -8,8 +8,8 @@ import (
 	"path/filepath"
 	"text/template"
 
-	"github.com/TimofteRazvan/castle-event-booker/pkg/config"
-	"github.com/TimofteRazvan/castle-event-booker/pkg/models"
+	"github.com/TimofteRazvan/castle-event-booker/internal/config"
+	"github.com/TimofteRazvan/castle-event-booker/internal/models"
 	"github.com/justinas/nosurf"
 )
 

@@ -3,8 +3,8 @@ package main
 import (
 	"net/http"
 
-	"github.com/TimofteRazvan/castle-event-booker/pkg/config"
-	"github.com/TimofteRazvan/castle-event-booker/pkg/handlers"
+	"github.com/TimofteRazvan/castle-event-booker/internal/config"
+	"github.com/TimofteRazvan/castle-event-booker/internal/handlers"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 )

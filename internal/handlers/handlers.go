@@ -6,9 +6,9 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/TimofteRazvan/castle-event-booker/pkg/config"
-	"github.com/TimofteRazvan/castle-event-booker/pkg/models"
-	"github.com/TimofteRazvan/castle-event-booker/pkg/render"
+	"github.com/TimofteRazvan/castle-event-booker/internal/config"
+	"github.com/TimofteRazvan/castle-event-booker/internal/models"
+	"github.com/TimofteRazvan/castle-event-booker/internal/render"
 )
 
 // Repo the repository used by the handlers

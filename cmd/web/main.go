@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/TimofteRazvan/castle-event-booker/pkg/config"
-	"github.com/TimofteRazvan/castle-event-booker/pkg/handlers"
-	"github.com/TimofteRazvan/castle-event-booker/pkg/render"
+	"github.com/TimofteRazvan/castle-event-booker/internal/config"
+	"github.com/TimofteRazvan/castle-event-booker/internal/handlers"
+	"github.com/TimofteRazvan/castle-event-booker/internal/render"
 	"github.com/alexedwards/scs/v2"
 )
 
