@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/gob"
 	"fmt"
 	"log"
 	"net/http"
@@ -8,6 +9,7 @@ import (
 
 	"github.com/TimofteRazvan/castle-event-booker/internal/config"
 	"github.com/TimofteRazvan/castle-event-booker/internal/handlers"
+	"github.com/TimofteRazvan/castle-event-booker/internal/models"
 	"github.com/TimofteRazvan/castle-event-booker/internal/render"
 	"github.com/alexedwards/scs/v2"
 )
@@ -19,6 +21,9 @@ var session *scs.SessionManager
 
 // main is the main app function
 func main() {
+	// for storing non-primitives in session
+	gob.Register(models.Reservation{})
+
 	// change this to true when we're in production
 	app.InProduction = false
 
