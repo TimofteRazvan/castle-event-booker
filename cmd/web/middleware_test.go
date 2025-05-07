@@ -16,7 +16,7 @@ func TestNoSurf(t *testing.T) {
 		// nothing, pass
 	default:
 		// return type should be http.Handler
-		t.Error(fmt.Sprintf("NoSurf return type %T is not http.Handler", v))
+		t.Error(fmt.Sprintf("NoSurf() return type %T is not http.Handler", v))
 	}
 }
 
@@ -30,6 +30,6 @@ func TestSessionLoad(t *testing.T) {
 		// nothing, pass
 	default:
 		// return type should be http.Handler
-		t.Error(fmt.Sprintf("NoSurf return type %T is not http.Handler", v))
+		t.Error(fmt.Sprintf("SessionLoad() return type %T is not http.Handler", v))
 	}
 }
