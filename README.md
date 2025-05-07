@@ -20,3 +20,10 @@ A Go / Golang web app which is supposed to allow clients to book events at Corvi
 - [VanillaJS Datepicker](https://github.com/mymth/vanillajs-datepicker) v1.3.4
 - [Notie](https://github.com/jaredreich/notie)
 - [SweetAlert2](https://github.com/sweetalert2/sweetalert2)
+
+<h3> - Testing: </h3>
+Run this in your console to check for testing coverage in the directory you are in:
+
+```bash
+go test -coverprofile=coverage.out && go tool cover -html=coverage.out
+```
