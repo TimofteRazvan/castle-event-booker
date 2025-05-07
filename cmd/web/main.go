@@ -21,6 +21,26 @@ var session *scs.SessionManager
 
 // main is the main app function
 func main() {
+	err := run()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Printf("Starting application of port %s\n", portNumber)
+
+	srv := &http.Server{
+		Addr:    portNumber,
+		Handler: routes(&app),
+	}
+
+	err = srv.ListenAndServe()
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func run() error {
+
 	// for storing non-primitives in session
 	gob.Register(models.Reservation{})
 
@@ -38,6 +58,7 @@ func main() {
 	templateCache, err := render.CreateTemplateCache()
 	if err != nil {
 		log.Fatal(err.Error())
+		return err
 	}
 
 	app.TemplateCache = templateCache
@@ -48,15 +69,5 @@ func main() {
 
 	render.NewTemplate(&app)
 
-	fmt.Printf("Starting application of port %s\n", portNumber)
-
-	srv := &http.Server{
-		Addr:    portNumber,
-		Handler: routes(&app),
-	}
-
-	err = srv.ListenAndServe()
-	if err != nil {
-		log.Fatal(err)
-	}
+	return nil
 }
