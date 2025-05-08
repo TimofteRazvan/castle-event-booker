@@ -34,3 +34,45 @@ func getSession() (*http.Request, error) {
 
 	return request, nil
 }
+
+func TestRenderTemplate(t *testing.T) {
+	pageTmplPath = "./../../templates/*.page.tmpl"
+	layoutTmplPath = "./../../templates/*.layout.tmpl"
+	tc, err := CreateTemplateCache()
+	if err != nil {
+		t.Error(err)
+	}
+
+	app.TemplateCache = tc
+
+	request, err := getSession()
+	if err != nil {
+		t.Error(err)
+	}
+
+	var respWriter myWriter
+
+	err = RenderTemplate(&respWriter, request, "home.page.tmpl", &models.TemplateData{})
+	if err != nil {
+		t.Error("Error writing template to browser")
+	}
+
+	err = RenderTemplate(&respWriter, request, "false-template.page.tmpl", &models.TemplateData{})
+	if err == nil {
+		t.Error("Rendered template that should not exist")
+	}
+}
+
+func TestCreateTemplateCache(t *testing.T) {
+	pageTmplPath = "./../../templates/*.page.tmpl"
+	layoutTmplPath = "./../../templates/*.layout.tmpl"
+
+	tc, err := CreateTemplateCache()
+	if err != nil || tc == nil {
+		t.Error(err)
+	}
+}
+
+func TestNewTemplate(t *testing.T) {
+	NewTemplate(app)
+}

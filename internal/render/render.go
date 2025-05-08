@@ -2,9 +2,8 @@ package render
 
 import (
 	"bytes"
-	"fmt"
+	"errors"
 	"html/template"
-	"log"
 	"net/http"
 	"path/filepath"
 
@@ -13,8 +12,8 @@ import (
 	"github.com/justinas/nosurf"
 )
 
-const pageTmplPath = "./templates/*.page.tmpl"
-const layoutTmplPath = "./templates/*.layout.tmpl"
+var pageTmplPath = "./templates/*.page.tmpl"
+var layoutTmplPath = "./templates/*.layout.tmpl"
 
 var functions = template.FuncMap{}
 
@@ -34,7 +33,7 @@ func AddDefaultData(td *models.TemplateData, r *http.Request) *models.TemplateDa
 }
 
 // RenderTemplate renders templates using html tmpl
-func RenderTemplate(w http.ResponseWriter, r *http.Request, tmpl string, td *models.TemplateData) {
+func RenderTemplate(w http.ResponseWriter, r *http.Request, tmpl string, td *models.TemplateData) error {
 	var templateCache map[string]*template.Template
 	if app.UseCache {
 		templateCache = app.TemplateCache
@@ -44,7 +43,7 @@ func RenderTemplate(w http.ResponseWriter, r *http.Request, tmpl string, td *mod
 
 	t, ok := templateCache[tmpl]
 	if !ok {
-		log.Fatal("Couldn't get template from template cache")
+		return errors.New("Couldn't get template from template cache")
 	}
 
 	buf := new(bytes.Buffer)
@@ -53,15 +52,15 @@ func RenderTemplate(w http.ResponseWriter, r *http.Request, tmpl string, td *mod
 
 	err := t.Execute(buf, td)
 	if err != nil {
-		fmt.Println(err.Error())
-		return
+		return err
 	}
 
 	_, err = buf.WriteTo(w)
 	if err != nil {
-		fmt.Println(err.Error())
-		return
+		return err
 	}
+
+	return nil
 }
 
 // CreateTemplateCache creates a template cache as a map
