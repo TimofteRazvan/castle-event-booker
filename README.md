@@ -28,13 +28,13 @@ Run this in your console to check for testing coverage in the directory you are 
 go test -coverprofile=coverage.out && go tool cover -html=coverage.out
 ```
 
-Run this in bash (Linux/Mac) console to run the app
+Run this in bash terminal (Linux/Mac) to run the app
 
 ```bash
 ./run.sh
 ```
 
-Run this in cmd (Windows) to run the app
+Run this in cmd terminal (Windows) to run the app
 
 ```bash
 run.bat
