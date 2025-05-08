@@ -89,12 +89,11 @@ func TestForm_MinLength(t *testing.T) {
 }
 
 func TestForm_IsEmail(t *testing.T) {
-	request := httptest.NewRequest("POST", "/test", nil)
 	postData := url.Values{}
 	postData.Add("email", "razvan@gmailcom")
 	postData.Add("email1", "razvangmail.com")
 	postData.Add("email2", "razvan@gmail.com")
-	request, _ = http.NewRequest("POST", "/test", nil)
+	request, _ := http.NewRequest("POST", "/test", nil)
 	request.PostForm = postData
 	form := New(request.PostForm)
 	if form.IsEmail("email") {
