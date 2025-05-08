@@ -28,3 +28,6 @@ go.work.sum
 # env file
 =======
 .env
+
+# So that my database owner information is not stored on git
+database.yml
