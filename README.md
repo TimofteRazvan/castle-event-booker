@@ -23,7 +23,8 @@ A Go / Golang web app which is supposed to allow clients to book events at Corvi
 - [Soda](github.com/gobuffalo/pop/v6/soda@latest)
 
 <h3> - Migrations: </h3>
-Put contents in database.yml.example into a new root-level file called database.yml (ensure the contents do not get formatted)
+Rename database.yml.example to database.yml (ensure the contents do not get formatted in any way).
+
 Run this in your terminal for the migrations:
 
 ```bash
