@@ -31,6 +31,12 @@ Run this in your terminal for the migrations:
 soda migrate
 ```
 
+On the other hand, if the migrations failed at some point, you can roll back with:
+
+```bash
+soda migrate down
+```
+
 <h3> - Testing: </h3>
 Run this in your console to check for testing coverage in the directory you are in:
 
