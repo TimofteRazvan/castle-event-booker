@@ -40,17 +40,17 @@ func NewHandlers(r *Repository) {
 
 // Home is the home page handler
 func (m *Repository) Home(w http.ResponseWriter, r *http.Request) {
-	render.RenderTemplate(w, r, "home.page.tmpl", &models.TemplateData{})
+	render.Template(w, r, "home.page.tmpl", &models.TemplateData{})
 }
 
 // About is the about page handler
 func (m *Repository) About(w http.ResponseWriter, r *http.Request) {
-	render.RenderTemplate(w, r, "about.page.tmpl", &models.TemplateData{})
+	render.Template(w, r, "about.page.tmpl", &models.TemplateData{})
 }
 
 // Booking is the booking page handler
 func (m *Repository) Booking(w http.ResponseWriter, r *http.Request) {
-	render.RenderTemplate(w, r, "booking.page.tmpl", &models.TemplateData{})
+	render.Template(w, r, "booking.page.tmpl", &models.TemplateData{})
 }
 
 // PostBooking posts the Booking page data
@@ -85,22 +85,22 @@ func (m *Repository) BookingJSON(w http.ResponseWriter, r *http.Request) {
 
 // Knights is the knights page handler
 func (m *Repository) Knights(w http.ResponseWriter, r *http.Request) {
-	render.RenderTemplate(w, r, "knights.page.tmpl", &models.TemplateData{})
+	render.Template(w, r, "knights.page.tmpl", &models.TemplateData{})
 }
 
 // Throne is the throne page handler
 func (m *Repository) Throne(w http.ResponseWriter, r *http.Request) {
-	render.RenderTemplate(w, r, "throne.page.tmpl", &models.TemplateData{})
+	render.Template(w, r, "throne.page.tmpl", &models.TemplateData{})
 }
 
 // Banquet is the banquet page handler
 func (m *Repository) Banquet(w http.ResponseWriter, r *http.Request) {
-	render.RenderTemplate(w, r, "banquet.page.tmpl", &models.TemplateData{})
+	render.Template(w, r, "banquet.page.tmpl", &models.TemplateData{})
 }
 
 // Contact is the contact page handler
 func (m *Repository) Contact(w http.ResponseWriter, r *http.Request) {
-	render.RenderTemplate(w, r, "contact.page.tmpl", &models.TemplateData{})
+	render.Template(w, r, "contact.page.tmpl", &models.TemplateData{})
 }
 
 // MakeReservation is the make-reservation page handler
@@ -109,7 +109,7 @@ func (m *Repository) MakeReservation(w http.ResponseWriter, r *http.Request) {
 	data := make(map[string]interface{})
 	data["reservation"] = emptyReservation
 
-	render.RenderTemplate(w, r, "make-reservation.page.tmpl", &models.TemplateData{
+	render.Template(w, r, "make-reservation.page.tmpl", &models.TemplateData{
 		Form: forms.New(nil),
 		Data: data,
 	})
@@ -140,7 +140,7 @@ func (m *Repository) PostMakeReservation(w http.ResponseWriter, r *http.Request)
 		data := make(map[string]interface{})
 		data["reservation"] = reservation
 
-		render.RenderTemplate(w, r, "make-reservation.page.tmpl", &models.TemplateData{
+		render.Template(w, r, "make-reservation.page.tmpl", &models.TemplateData{
 			Form: form,
 			Data: data,
 		})
@@ -166,7 +166,7 @@ func (m *Repository) ReservationSummary(w http.ResponseWriter, r *http.Request) 
 	data := make(map[string]interface{})
 	data["reservation"] = reservation
 
-	render.RenderTemplate(w, r, "reservation-summary.page.tmpl", &models.TemplateData{
+	render.Template(w, r, "reservation-summary.page.tmpl", &models.TemplateData{
 		Data: data,
 	})
 }

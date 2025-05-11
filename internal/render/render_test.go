@@ -35,7 +35,7 @@ func getSession() (*http.Request, error) {
 	return request, nil
 }
 
-func TestRenderTemplate(t *testing.T) {
+func TestTemplate(t *testing.T) {
 	pageTmplPath = "./../../templates/*.page.tmpl"
 	layoutTmplPath = "./../../templates/*.layout.tmpl"
 	tc, err := CreateTemplateCache()
@@ -52,12 +52,12 @@ func TestRenderTemplate(t *testing.T) {
 
 	var respWriter myWriter
 
-	err = RenderTemplate(&respWriter, request, "home.page.tmpl", &models.TemplateData{})
+	err = Template(&respWriter, request, "home.page.tmpl", &models.TemplateData{})
 	if err != nil {
 		t.Error("Error writing template to browser")
 	}
 
-	err = RenderTemplate(&respWriter, request, "false-template.page.tmpl", &models.TemplateData{})
+	err = Template(&respWriter, request, "false-template.page.tmpl", &models.TemplateData{})
 	if err == nil {
 		t.Error("Rendered template that should not exist")
 	}
@@ -74,5 +74,5 @@ func TestCreateTemplateCache(t *testing.T) {
 }
 
 func TestNewTemplate(t *testing.T) {
-	NewTemplate(app)
+	NewRenderer(app)
 }
