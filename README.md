@@ -20,8 +20,8 @@ A Go / Golang web app which is supposed to allow clients to book events at Corvi
 - [VanillaJS Datepicker](https://github.com/mymth/vanillajs-datepicker) v1.3.4
 - [Notie](https://github.com/jaredreich/notie)
 - [SweetAlert2](https://github.com/sweetalert2/sweetalert2)
-- [Soda](github.com/gobuffalo/pop/v6/soda@latest)
-- [Pgx](github.com/jackc/pgx/) v5
+- [Soda](https://github.com/gobuffalo/pop/v6/soda@latest)
+- [Pgx](https://github.com/jackc/pgx/) v5
 
 <h3> - Migrations: </h3>
 Rename database.yml.example to database.yml (ensure the contents do not get formatted in any way).
