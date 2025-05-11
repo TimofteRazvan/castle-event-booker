@@ -8,9 +8,12 @@ import (
 
 	"github.com/TimofteRazvan/castle-event-booker/helpers"
 	"github.com/TimofteRazvan/castle-event-booker/internal/config"
+	"github.com/TimofteRazvan/castle-event-booker/internal/driver"
 	"github.com/TimofteRazvan/castle-event-booker/internal/forms"
 	"github.com/TimofteRazvan/castle-event-booker/internal/models"
 	"github.com/TimofteRazvan/castle-event-booker/internal/render"
+	"github.com/TimofteRazvan/castle-event-booker/internal/repository"
+	"github.com/TimofteRazvan/castle-event-booker/internal/repository/dbrepo"
 )
 
 // Repo the repository used by the handlers
@@ -19,12 +22,14 @@ var Repo *Repository
 // Repository is the repository pattern type
 type Repository struct {
 	App *config.AppConfig
+	DB  repository.DatabaseRepo
 }
 
 // NewRepo creates a new repository
-func NewRepo(a *config.AppConfig) *Repository {
+func NewRepo(a *config.AppConfig, db *driver.DB) *Repository {
 	return &Repository{
 		App: a,
+		DB:  dbrepo.NewPostgresRepo(db.SQL, a),
 	}
 }
 
