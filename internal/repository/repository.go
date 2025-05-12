@@ -1,6 +1,10 @@
 package repository
 
-import "github.com/TimofteRazvan/castle-event-booker/internal/models"
+import (
+	"time"
+
+	"github.com/TimofteRazvan/castle-event-booker/internal/models"
+)
 
 type DatabaseRepo interface {
 	AllUsers() bool
@@ -8,4 +12,6 @@ type DatabaseRepo interface {
 	InsertReservation(res models.Reservation) (int, error)
 
 	InsertRoomRestriction(rr models.RoomRestriction) error
+
+	SearchAvailabilityByDate(start, end time.Time, roomID int) (bool, error)
 }
