@@ -78,18 +78,17 @@
                 const range_picker = new DateRangePicker(elem, {
                     format: "yyyy-mm-dd",
                     showOnFocus: true,
+                    minDate: new Date(),
                 });
                 const modal = Swal.getPopup();
 
-                // Get the date picker element
                 const datePickerElement = document.querySelector('.datepicker-picker');
 
-                // Set the date picker position relative to the modal
                 if (datePickerElement) {
                     datePickerElement.style.position = 'absolute';
-                    datePickerElement.style.top = 'calc(100% + 10px)'; // Position it just below the input fields
-                    datePickerElement.style.left = '0'; // Align with the left side of the modal
-                    datePickerElement.style.zIndex = '1050'; // Ensure it's above the modal buttons
+                    datePickerElement.style.top = 'calc(100% + 10px)';
+                    datePickerElement.style.left = '0';
+                    datePickerElement.style.zIndex = '1050';
                 }
             },
 
@@ -102,6 +101,7 @@
                 let form = document.getElementById("check-availability-form");
                 let formData = new FormData(form);
                 formData.append("csrf_token", "{{.CSRFToken}}");
+                formData.append("room_id", "2");
 
                 fetch("/booking-json", {
                     method: "POST",
@@ -109,7 +109,12 @@
                 })
                     .then(response => response.json())
                     .then(data => {
-                        console.log(data);
+                        if (data.ok) {
+                            console.log("room is available")
+                        }
+                        else {
+                            console.log("room is not available")
+                        }
                     })
             }
         });
