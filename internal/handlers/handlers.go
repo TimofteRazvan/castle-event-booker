@@ -121,8 +121,11 @@ func (m *Repository) ChooseRoom(w http.ResponseWriter, r *http.Request) {
 }
 
 type jsonResponse struct {
-	OK      bool   `json:"ok"`
-	Message string `json:"message"`
+	OK        bool   `json:"ok"`
+	Message   string `json:"message"`
+	RoomID    string `json:"room_id"`
+	StartDate string `json:"start_date"`
+	EndDate   string `json:"end_date"`
 }
 
 // BookingJSON handles same-page request for booking and sends JSON response
@@ -155,8 +158,11 @@ func (m *Repository) BookingJSON(w http.ResponseWriter, r *http.Request) {
 	}
 
 	resp := jsonResponse{
-		OK:      available,
-		Message: "",
+		OK:        available,
+		Message:   "",
+		RoomID:    strconv.Itoa(roomID),
+		StartDate: sd,
+		EndDate:   ed,
 	}
 
 	out, err := json.MarshalIndent(resp, "", "    ")
