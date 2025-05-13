@@ -1,5 +1,10 @@
+:root {
+  -bs--body-font-family: "Merriweather", serif;
+}
+
 body {
   overflow-x: hidden;
+  font-family: "Merriweather", serif;
 }
 
 .my-footer {
