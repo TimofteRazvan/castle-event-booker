@@ -101,6 +101,7 @@ func (m *Repository) PostBooking(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// ChooseRoom displays available rooms
 func (m *Repository) ChooseRoom(w http.ResponseWriter, r *http.Request) {
 	roomID, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
@@ -174,6 +175,47 @@ func (m *Repository) BookingJSON(w http.ResponseWriter, r *http.Request) {
 	log.Println(string(out))
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(out)
+}
+
+// BookRoom takes URL parameters and builds a reservation session variables,
+// takes users to the make reservation page
+func (m *Repository) BookRoom(w http.ResponseWriter, r *http.Request) {
+	roomID, err := strconv.Atoi(r.URL.Query().Get("id"))
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	sd := r.URL.Query().Get("s")
+	ed := r.URL.Query().Get("e")
+
+	layout := "2006-01-02"
+	startDate, err := time.Parse(layout, sd)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+
+	endDate, err := time.Parse(layout, ed)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+
+	room, err := m.DB.GetRoomByID(roomID)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+
+	var reservation models.Reservation
+	reservation.RoomID = roomID
+	reservation.StartDate = startDate
+	reservation.EndDate = endDate
+	reservation.Room.RoomName = room.RoomName
+
+	m.App.Session.Put(r.Context(), "reservation", reservation)
+
+	http.Redirect(w, r, "/make-reservation", http.StatusSeeOther)
 }
 
 // Knights is the knights page handler
@@ -290,6 +332,7 @@ func (m *Repository) PostMakeReservation(w http.ResponseWriter, r *http.Request)
 	http.Redirect(w, r, "/reservation-summary", http.StatusSeeOther)
 }
 
+// ReservationSummary displays the details of the posted reservation
 func (m *Repository) ReservationSummary(w http.ResponseWriter, r *http.Request) {
 	reservation, ok := m.App.Session.Get(r.Context(), "reservation").(models.Reservation)
 	if !ok {
