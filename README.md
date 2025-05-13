@@ -2,6 +2,8 @@
 
 A Go / Golang web app which is supposed to allow clients to book events at Corvins' Castle in Hunedoara, while also allowing moderators to administrate it. Made with the help of Trevor Sawler's courses on Udemy.
 
+![](https://github.com/TimofteRazvan/castle-event-booker/tree/main/static/images/home_page_1)
+
 <h2> Tech Stack </h2>
 
 - Go v1.23
