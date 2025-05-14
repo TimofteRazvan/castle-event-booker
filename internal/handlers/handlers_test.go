@@ -4,10 +4,10 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"reflect"
 	"strings"
 	"testing"
@@ -83,9 +83,10 @@ func TestNewRepo(t *testing.T) {
 
 func TestRepository_PostBooking(t *testing.T) {
 	// Case 1: all is correct + available rooms
-	requestBody := "start=2025-07-01"
-	requestBody = fmt.Sprintf("%s&%s", requestBody, "end=2025-07-02")
-	request, err := http.NewRequest("POST", "/booking", strings.NewReader(requestBody))
+	postData := url.Values{}
+	postData.Add("start", "2025-07-01")
+	postData.Add("end", "2025-07-02")
+	request, err := http.NewRequest("POST", "/booking", strings.NewReader(postData.Encode()))
 	if err != nil {
 		t.Log(err)
 		t.Fatal(err)
@@ -104,9 +105,10 @@ func TestRepository_PostBooking(t *testing.T) {
 	}
 
 	// Case 2: all is correct + no available rooms
-	requestBody = "start=2070-07-01"
-	requestBody = fmt.Sprintf("%s&%s", requestBody, "end=2070-07-02")
-	request, err = http.NewRequest("POST", "/booking", strings.NewReader(requestBody))
+	postData = url.Values{}
+	postData.Add("start", "2070-07-01")
+	postData.Add("end", "2070-07-02")
+	request, err = http.NewRequest("POST", "/booking", strings.NewReader(postData.Encode()))
 	if err != nil {
 		t.Log(err)
 		t.Fatal(err)
@@ -142,9 +144,10 @@ func TestRepository_PostBooking(t *testing.T) {
 	}
 
 	// Case 4: invalid start date format
-	requestBody = "start=20250701"
-	requestBody = fmt.Sprintf("%s&%s", requestBody, "end=2025-07-02")
-	request, err = http.NewRequest("POST", "/booking", strings.NewReader(requestBody))
+	postData = url.Values{}
+	postData.Add("start", "20250701")
+	postData.Add("end", "2025-07-02")
+	request, err = http.NewRequest("POST", "/booking", strings.NewReader(postData.Encode()))
 	if err != nil {
 		t.Log(err)
 		t.Fatal(err)
@@ -162,9 +165,10 @@ func TestRepository_PostBooking(t *testing.T) {
 	}
 
 	// Case 5: invalid end date format
-	requestBody = "start=2025-07-01"
-	requestBody = fmt.Sprintf("%s&%s", requestBody, "end=20250702")
-	request, err = http.NewRequest("POST", "/booking", strings.NewReader(requestBody))
+	postData = url.Values{}
+	postData.Add("start", "2025-07-01")
+	postData.Add("end", "20250702")
+	request, err = http.NewRequest("POST", "/booking", strings.NewReader(postData.Encode()))
 	if err != nil {
 		t.Log(err)
 		t.Fatal(err)
@@ -182,9 +186,10 @@ func TestRepository_PostBooking(t *testing.T) {
 	}
 
 	// Case 6: failed searching due to database query restrictions
-	requestBody = "start=2060-01-01"
-	requestBody = fmt.Sprintf("%s&%s", requestBody, "end=2025-07-02")
-	request, err = http.NewRequest("POST", "/booking", strings.NewReader(requestBody))
+	postData = url.Values{}
+	postData.Add("start", "2060-01-01")
+	postData.Add("end", "2025-07-02")
+	request, err = http.NewRequest("POST", "/booking", strings.NewReader(postData.Encode()))
 	if err != nil {
 		t.Log(err)
 		t.Fatal(err)
@@ -271,11 +276,12 @@ func TestRepository_ChooseRoom(t *testing.T) {
 
 func TestRepository_BookingJSON(t *testing.T) {
 	// Case 1: all is correct
-	requestBody := "start=2025-01-01"
-	requestBody = fmt.Sprintf("%s&%s", requestBody, "end=2025-01-02")
-	requestBody = fmt.Sprintf("%s&%s", requestBody, "room_id=2")
+	postData := url.Values{}
+	postData.Add("start", "2025-07-01")
+	postData.Add("end", "2025-07-02")
+	postData.Add("room_id", "2")
 
-	request, err := http.NewRequest("POST", "/booking-json", strings.NewReader(requestBody))
+	request, err := http.NewRequest("POST", "/booking-json", strings.NewReader(postData.Encode()))
 	if err != nil {
 		t.Log(err)
 		t.Fatal(err)
@@ -300,11 +306,12 @@ func TestRepository_BookingJSON(t *testing.T) {
 	}
 
 	// Case 2: room unavailable
-	requestBody = "start=2070-01-01"
-	requestBody = fmt.Sprintf("%s&%s", requestBody, "end=2070-01-02")
-	requestBody = fmt.Sprintf("%s&%s", requestBody, "room_id=2")
+	postData = url.Values{}
+	postData.Add("start", "2070-01-01")
+	postData.Add("end", "2070-01-02")
+	postData.Add("room_id", "2")
 
-	request, err = http.NewRequest("POST", "/booking-json", strings.NewReader(requestBody))
+	request, err = http.NewRequest("POST", "/booking-json", strings.NewReader(postData.Encode()))
 	if err != nil {
 		t.Log(err)
 		t.Fatal(err)
@@ -350,11 +357,12 @@ func TestRepository_BookingJSON(t *testing.T) {
 	}
 
 	// Case 4: fail parsing start date
-	requestBody = "start=wrong"
-	requestBody = fmt.Sprintf("%s&%s", requestBody, "end=2070-01-02")
-	requestBody = fmt.Sprintf("%s&%s", requestBody, "room_id=2")
+	postData = url.Values{}
+	postData.Add("start", "wrong")
+	postData.Add("end", "2025-07-02")
+	postData.Add("room_id", "2")
 
-	request, err = http.NewRequest("POST", "/booking-json", strings.NewReader(requestBody))
+	request, err = http.NewRequest("POST", "/booking-json", strings.NewReader(postData.Encode()))
 	if err != nil {
 		t.Log(err)
 		t.Fatal(err)
@@ -377,11 +385,12 @@ func TestRepository_BookingJSON(t *testing.T) {
 	}
 
 	// Case 5: fail parsing end date
-	requestBody = "start=2025-09-09"
-	requestBody = fmt.Sprintf("%s&%s", requestBody, "end=wrong")
-	requestBody = fmt.Sprintf("%s&%s", requestBody, "room_id=2")
+	postData = url.Values{}
+	postData.Add("start", "2025-09-09")
+	postData.Add("end", "wrong")
+	postData.Add("room_id", "2")
 
-	request, err = http.NewRequest("POST", "/booking-json", strings.NewReader(requestBody))
+	request, err = http.NewRequest("POST", "/booking-json", strings.NewReader(postData.Encode()))
 	if err != nil {
 		t.Log(err)
 		t.Fatal(err)
@@ -404,11 +413,12 @@ func TestRepository_BookingJSON(t *testing.T) {
 	}
 
 	// Case 6: fail parsing room id
-	requestBody = "start=2025-09-09"
-	requestBody = fmt.Sprintf("%s&%s", requestBody, "end=2025-09-10")
-	requestBody = fmt.Sprintf("%s&%s", requestBody, "room_id=wrong")
+	postData = url.Values{}
+	postData.Add("start", "2025-09-09")
+	postData.Add("end", "2025-09-10")
+	postData.Add("room_id", "wrong")
 
-	request, err = http.NewRequest("POST", "/booking-json", strings.NewReader(requestBody))
+	request, err = http.NewRequest("POST", "/booking-json", strings.NewReader(postData.Encode()))
 	if err != nil {
 		t.Log(err)
 		t.Fatal(err)
@@ -431,11 +441,12 @@ func TestRepository_BookingJSON(t *testing.T) {
 	}
 
 	// Case 7: database query error
-	requestBody = "start=2060-01-01"
-	requestBody = fmt.Sprintf("%s&%s", requestBody, "end=2060-01-02")
-	requestBody = fmt.Sprintf("%s&%s", requestBody, "room_id=2")
+	postData = url.Values{}
+	postData.Add("start", "2060-01-01")
+	postData.Add("end", "2060-01-02")
+	postData.Add("room_id", "2")
 
-	request, err = http.NewRequest("POST", "/booking-json", strings.NewReader(requestBody))
+	request, err = http.NewRequest("POST", "/booking-json", strings.NewReader(postData.Encode()))
 	if err != nil {
 		t.Log(err)
 		t.Fatal(err)
@@ -625,11 +636,13 @@ func TestRepository_PostMakeReservation(t *testing.T) {
 			RoomName: "Knights' Hall",
 		},
 	}
-	requestBody := "first_name=Mick"
-	requestBody = fmt.Sprintf("%s&%s", requestBody, "last_name=Jagger")
-	requestBody = fmt.Sprintf("%s&%s", requestBody, "email=mick@gmail.com")
-	requestBody = fmt.Sprintf("%s&%s", requestBody, "phone=123")
-	request, err := http.NewRequest("POST", "/make-reservation", strings.NewReader(requestBody))
+	postData := url.Values{}
+	postData.Add("first_name", "Mick")
+	postData.Add("last_name", "Jagger")
+	postData.Add("email", "mick@gmail.com")
+	postData.Add("phone", "123")
+
+	request, err := http.NewRequest("POST", "/make-reservation", strings.NewReader(postData.Encode()))
 	if err != nil {
 		t.Log(err)
 		t.Fatal(err)
@@ -649,7 +662,7 @@ func TestRepository_PostMakeReservation(t *testing.T) {
 	}
 
 	// Case 2: reservation not in session
-	request, err = http.NewRequest("POST", "/make-reservation", strings.NewReader(requestBody))
+	request, err = http.NewRequest("POST", "/make-reservation", strings.NewReader(postData.Encode()))
 	if err != nil {
 		t.Log(err)
 		t.Fatal(err)
@@ -686,11 +699,12 @@ func TestRepository_PostMakeReservation(t *testing.T) {
 	}
 
 	// Case 4: invalid form data
-	requestBody = "first_name=Mick"
-	requestBody = fmt.Sprintf("%s&%s", requestBody, "last_name=Jagger")
-	requestBody = fmt.Sprintf("%s&%s", requestBody, "email=mick@com")
-	requestBody = fmt.Sprintf("%s&%s", requestBody, "phone=123")
-	request, err = http.NewRequest("POST", "/make-reservation", strings.NewReader(requestBody))
+	postData = url.Values{}
+	postData.Add("first_name", "Mick")
+	postData.Add("last_name", "Jagger")
+	postData.Add("email", "mick@com")
+	postData.Add("phone", "123")
+	request, err = http.NewRequest("POST", "/make-reservation", strings.NewReader(postData.Encode()))
 	if err != nil {
 		t.Log(err)
 		t.Fatal(err)
@@ -708,12 +722,13 @@ func TestRepository_PostMakeReservation(t *testing.T) {
 		t.Errorf("PostMakeReservation handler returned wrong response code: got %d, wanted %d", responseRecorder.Code, http.StatusTemporaryRedirect)
 	}
 
-	// Case 5: invalid insert reservation
-	requestBody = "first_name=Mick"
-	requestBody = fmt.Sprintf("%s&%s", requestBody, "last_name=Jagger")
-	requestBody = fmt.Sprintf("%s&%s", requestBody, "email=mick@gmail.com")
-	requestBody = fmt.Sprintf("%s&%s", requestBody, "phone=123")
-	request, err = http.NewRequest("POST", "/make-reservation", strings.NewReader(requestBody))
+	// Case 5: invalid insert reservation room id
+	postData = url.Values{}
+	postData.Add("first_name", "Mick")
+	postData.Add("last_name", "Jagger")
+	postData.Add("email", "mick@gmail.com")
+	postData.Add("phone", "123")
+	request, err = http.NewRequest("POST", "/make-reservation", strings.NewReader(postData.Encode()))
 	if err != nil {
 		t.Log(err)
 		t.Fatal(err)
@@ -733,11 +748,12 @@ func TestRepository_PostMakeReservation(t *testing.T) {
 	}
 
 	// Case 6: invalid insert room restriction
-	requestBody = "first_name=Mick"
-	requestBody = fmt.Sprintf("%s&%s", requestBody, "last_name=Jagger")
-	requestBody = fmt.Sprintf("%s&%s", requestBody, "email=mick@gmail.com")
-	requestBody = fmt.Sprintf("%s&%s", requestBody, "phone=123")
-	request, err = http.NewRequest("POST", "/make-reservation", strings.NewReader(requestBody))
+	postData = url.Values{}
+	postData.Add("first_name", "Mick")
+	postData.Add("last_name", "Jagger")
+	postData.Add("email", "mick@gmail.com")
+	postData.Add("phone", "123")
+	request, err = http.NewRequest("POST", "/make-reservation", strings.NewReader(postData.Encode()))
 	if err != nil {
 		t.Log(err)
 		t.Fatal(err)
