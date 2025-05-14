@@ -7,7 +7,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/TimofteRazvan/castle-event-booker/helpers"
 	"github.com/TimofteRazvan/castle-event-booker/internal/config"
 	"github.com/TimofteRazvan/castle-event-booker/internal/driver"
 	"github.com/TimofteRazvan/castle-event-booker/internal/forms"
@@ -233,7 +232,8 @@ func (m *Repository) BookingJSON(w http.ResponseWriter, r *http.Request) {
 func (m *Repository) BookRoom(w http.ResponseWriter, r *http.Request) {
 	roomID, err := strconv.Atoi(r.URL.Query().Get("id"))
 	if err != nil {
-		helpers.ServerError(w, err)
+		m.App.Session.Put(r.Context(), "error", "cannot parse id within URL")
+		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
 	sd := r.URL.Query().Get("s")
@@ -242,19 +242,22 @@ func (m *Repository) BookRoom(w http.ResponseWriter, r *http.Request) {
 	layout := "2006-01-02"
 	startDate, err := time.Parse(layout, sd)
 	if err != nil {
-		helpers.ServerError(w, err)
+		m.App.Session.Put(r.Context(), "error", "cannot parse start date")
+		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
 
 	endDate, err := time.Parse(layout, ed)
 	if err != nil {
-		helpers.ServerError(w, err)
+		m.App.Session.Put(r.Context(), "error", "cannot parse end date")
+		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
 
 	room, err := m.DB.GetRoomByID(roomID)
 	if err != nil {
-		helpers.ServerError(w, err)
+		m.App.Session.Put(r.Context(), "error", "database query fail: cannot get room by id")
+		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
 

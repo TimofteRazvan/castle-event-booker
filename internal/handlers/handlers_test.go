@@ -458,6 +458,102 @@ func TestRepository_BookingJSON(t *testing.T) {
 	}
 }
 
+func TestRepository_BookRoom(t *testing.T) {
+	// Case 1: all is correct
+	reservation := models.Reservation{
+		RoomID: 2,
+		Room: models.Room{
+			ID:       2,
+			RoomName: "Knights' Hall",
+		},
+	}
+
+	request, err := http.NewRequest("GET", "/book-room?s=2025-09-09&e=2025-09-02&id=2", nil)
+	if err != nil {
+		t.Log(err)
+		t.Fatal(err)
+	}
+	context := getContext(request)
+	request = request.WithContext(context)
+	responseRecorder := httptest.NewRecorder()
+	session.Put(context, "reservation", reservation)
+
+	handler := http.HandlerFunc(Repo.BookRoom)
+	handler.ServeHTTP(responseRecorder, request)
+
+	if responseRecorder.Code != http.StatusSeeOther {
+		t.Errorf("BookRoom handler returned wrong response code: got %d, wanted %d", responseRecorder.Code, http.StatusSeeOther)
+	}
+
+	// Case 2: start date parse failed
+	request, err = http.NewRequest("GET", "/book-room?s=wrong&e=2025-09-02&id=2", nil)
+	if err != nil {
+		t.Log(err)
+		t.Fatal(err)
+	}
+	context = getContext(request)
+	request = request.WithContext(context)
+	responseRecorder = httptest.NewRecorder()
+	session.Put(context, "reservation", reservation)
+
+	handler.ServeHTTP(responseRecorder, request)
+
+	if responseRecorder.Code != http.StatusTemporaryRedirect {
+		t.Errorf("BookRoom handler returned wrong response code: got %d, wanted %d", responseRecorder.Code, http.StatusTemporaryRedirect)
+	}
+
+	// Case 3: end date parse failed
+	request, err = http.NewRequest("GET", "/book-room?s=2025-09-01&e=wrong&id=2", nil)
+	if err != nil {
+		t.Log(err)
+		t.Fatal(err)
+	}
+	context = getContext(request)
+	request = request.WithContext(context)
+	responseRecorder = httptest.NewRecorder()
+	session.Put(context, "reservation", reservation)
+
+	handler.ServeHTTP(responseRecorder, request)
+
+	if responseRecorder.Code != http.StatusTemporaryRedirect {
+		t.Errorf("BookRoom handler returned wrong response code: got %d, wanted %d", responseRecorder.Code, http.StatusTemporaryRedirect)
+	}
+
+	// Case 4: id parse failed
+	request, err = http.NewRequest("GET", "/book-room?s=2025-09-01&e=2025-09-02&id=wrong", nil)
+	if err != nil {
+		t.Log(err)
+		t.Fatal(err)
+	}
+	context = getContext(request)
+	request = request.WithContext(context)
+	responseRecorder = httptest.NewRecorder()
+	session.Put(context, "reservation", reservation)
+
+	handler.ServeHTTP(responseRecorder, request)
+
+	if responseRecorder.Code != http.StatusTemporaryRedirect {
+		t.Errorf("BookRoom handler returned wrong response code: got %d, wanted %d", responseRecorder.Code, http.StatusTemporaryRedirect)
+	}
+
+	// Case 5: database id query failed
+	request, err = http.NewRequest("GET", "/book-room?s=2025-09-01&e=2025-09-02&id=99", nil)
+	if err != nil {
+		t.Log(err)
+		t.Fatal(err)
+	}
+	context = getContext(request)
+	request = request.WithContext(context)
+	responseRecorder = httptest.NewRecorder()
+	session.Put(context, "reservation", reservation)
+
+	handler.ServeHTTP(responseRecorder, request)
+
+	if responseRecorder.Code != http.StatusTemporaryRedirect {
+		t.Errorf("BookRoom handler returned wrong response code: got %d, wanted %d", responseRecorder.Code, http.StatusTemporaryRedirect)
+	}
+}
+
 func TestRepository_MakeReservation(t *testing.T) {
 	// Case 1: all is correct
 	reservation := models.Reservation{
