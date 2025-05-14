@@ -162,7 +162,6 @@ func (m *Repository) BookingJSON(w http.ResponseWriter, r *http.Request) {
 		w.Write(out)
 		return
 	}
-
 	sd := r.Form.Get("start")
 	ed := r.Form.Get("end")
 	layout := "2006-01-02"
@@ -178,7 +177,6 @@ func (m *Repository) BookingJSON(w http.ResponseWriter, r *http.Request) {
 		w.Write(out)
 		return
 	}
-
 	endDate, err := time.Parse(layout, ed)
 	if err != nil {
 		resp := jsonResponse{
@@ -191,7 +189,6 @@ func (m *Repository) BookingJSON(w http.ResponseWriter, r *http.Request) {
 		w.Write(out)
 		return
 	}
-
 	roomID, err := strconv.Atoi(r.Form.Get("room_id"))
 	if err != nil {
 		resp := jsonResponse{
@@ -204,7 +201,6 @@ func (m *Repository) BookingJSON(w http.ResponseWriter, r *http.Request) {
 		w.Write(out)
 		return
 	}
-
 	available, err := m.DB.SearchAvailabilityByDateByRoomID(startDate, endDate, roomID)
 	if err != nil {
 		resp := jsonResponse{

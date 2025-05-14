@@ -30,7 +30,30 @@ func (m *testDBRepo) InsertRoomRestriction(rr models.RoomRestriction) error {
 
 // SearchAvailabilityByDateByRoomID returns true if the room in the date interval is available for booking, false otherwise
 func (m *testDBRepo) SearchAvailabilityByDateByRoomID(start, end time.Time, roomID int) (bool, error) {
-	return false, nil
+	layout := "2006-01-02"
+	// if the start date is after 2060-12-31, then return empty slice,
+	// indicating no rooms are available;
+	str := "2060-12-31"
+	t, err := time.Parse(layout, str)
+	if err != nil {
+		log.Println(err)
+	}
+
+	// test to fail the query -- 2060-01-01 as start
+	testDateToFail, err := time.Parse(layout, "2060-01-01")
+	if err != nil {
+		log.Println(err)
+	}
+
+	if start == testDateToFail {
+		return false, errors.New("some error")
+	}
+
+	if start.After(t) {
+		return false, nil
+	}
+
+	return true, nil
 }
 
 // SearchAvailabilityByDateAllRooms returns a slice of available rooms for given date interval
@@ -59,8 +82,7 @@ func (m *testDBRepo) SearchAvailabilityByDateAllRooms(start, end time.Time) ([]m
 		return rooms, nil
 	}
 
-	// otherwise, put an entry into the slice, indicating that some room is
-	// available for search dates
+	// some room is available for date interval
 	room := models.Room{
 		ID: 1,
 	}
