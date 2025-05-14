@@ -69,7 +69,67 @@
             </form>
             `
         // attention.error({ msg: "Hello" })
-        attention.custom({ title: "Select dates:", msg: html })
+        attention.custom({
+            title: "Select dates:",
+            msg: html,
+
+            willOpen: () => {
+                const elem = document.getElementById("reservation-dates-modal");
+                const range_picker = new DateRangePicker(elem, {
+                    format: "yyyy-mm-dd",
+                    showOnFocus: true,
+                    minDate: new Date(),
+                });
+                const modal = Swal.getPopup();
+
+                const datePickerElement = document.querySelector('.datepicker-picker');
+
+                if (datePickerElement) {
+                    datePickerElement.style.position = 'absolute';
+                    datePickerElement.style.top = 'calc(100% + 10px)';
+                    datePickerElement.style.left = '0';
+                    datePickerElement.style.zIndex = '1050';
+                }
+            },
+
+            didOpen: () => {
+                document.getElementById("start").removeAttribute("disabled")
+                document.getElementById("end").removeAttribute("disabled")
+            },
+
+            callback: function (result) {
+                let form = document.getElementById("check-availability-form");
+                let formData = new FormData(form);
+                formData.append("csrf_token", "{{.CSRFToken}}");
+                formData.append("room_id", "4");
+
+                fetch("/booking-json", {
+                    method: "POST",
+                    body: formData,
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.ok) {
+                            attention.custom({
+                                icon: 'success',
+                                showConfirmButton: false,
+                                msg: '<p>Room is available!</p>'
+                                + '<p><a href="/book-room?id='
+                                + data.room_id
+                                + '&s='
+                                + data.start_date
+                                + '&e='
+                                + data.end_date
+                                + '" class="btn btn-primary">'
+                                + 'Book room</a></p>' 
+                            })
+                        }
+                        else {
+                            attention.error({msg: "Room unavailable!",})
+                        }
+                    })
+            }
+        });
     })
 </script>
 {{end}}
