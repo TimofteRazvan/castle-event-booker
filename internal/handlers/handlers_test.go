@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"log"
 	"net/http"
@@ -9,6 +10,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/TimofteRazvan/castle-event-booker/internal/driver"
 	"github.com/TimofteRazvan/castle-event-booker/internal/models"
 )
 
@@ -64,6 +66,18 @@ func TestHandlers(t *testing.T) {
 			t.Errorf("for %s, expected %d but got %d", test.name, test.expectedStatusCode, response.StatusCode)
 		}
 	}
+}
+
+func TestNewRepo(t *testing.T) {
+	fakeSQL := &sql.DB{}
+	fakeDriver := &driver.DB{
+		SQL: fakeSQL,
+	}
+	NewRepo(&app, fakeDriver)
+}
+
+func TestRepository_PostBooking(t *testing.T) {
+	
 }
 
 func TestRepository_MakeReservation(t *testing.T) {

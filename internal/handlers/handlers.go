@@ -141,6 +141,13 @@ type jsonResponse struct {
 
 // BookingJSON handles same-page request for booking and sends JSON response
 func (m *Repository) BookingJSON(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseForm()
+	if err != nil {
+		m.App.Session.Put(r.Context(), "error", "cannot parse form")
+		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+		return
+	}
+
 	sd := r.Form.Get("start")
 	ed := r.Form.Get("end")
 	layout := "2006-01-02"
