@@ -45,7 +45,7 @@ soda migrate down
 - [Soda](https://github.com/gobuffalo/pop/v6/soda@latest)
 - [Pgx](https://github.com/jackc/pgx/) v5
 
-<h3> - Testing: </h3>
+<h2> Testing: </h2>
 Run this in your console to check for testing coverage in the directory you are in:
 
 ```bash
