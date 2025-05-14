@@ -1,6 +1,7 @@
 package dbrepo
 
 import (
+	"errors"
 	"time"
 
 	"github.com/TimofteRazvan/castle-event-booker/internal/models"
@@ -34,5 +35,9 @@ func (m *testDBRepo) SearchAvailabilityByDateAllRooms(start, end time.Time) ([]m
 // GetRoomByID returns the room with the given ID
 func (m *testDBRepo) GetRoomByID(roomID int) (models.Room, error) {
 	var room models.Room
+	if roomID < 2 || roomID > 4 {
+		return room, errors.New("Inexistent room ID")
+	}
+
 	return room, nil
 }
