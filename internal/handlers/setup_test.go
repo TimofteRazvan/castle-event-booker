@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"testing"
 	"time"
 
 	"github.com/TimofteRazvan/castle-event-booker/internal/config"
@@ -26,7 +27,7 @@ var functions = template.FuncMap{}
 var app config.AppConfig
 var session *scs.SessionManager
 
-func getRoutes() http.Handler {
+func TestMain(m *testing.M) {
 	// for storing non-primitives in session
 	gob.Register(models.Reservation{})
 
@@ -60,6 +61,10 @@ func getRoutes() http.Handler {
 
 	render.NewRenderer(&app)
 
+	os.Exit(m.Run())
+}
+
+func getRoutes() http.Handler {
 	mux := chi.NewRouter()
 
 	mux.Use(middleware.Recoverer)
