@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"net/http/httptest"
+	"reflect"
 	"strings"
 	"testing"
 
@@ -73,11 +74,131 @@ func TestNewRepo(t *testing.T) {
 	fakeDriver := &driver.DB{
 		SQL: fakeSQL,
 	}
-	NewRepo(&app, fakeDriver)
+	testRepo := NewRepo(&app, fakeDriver)
+	if reflect.TypeOf(testRepo).String() != "*handlers.Repository" {
+		t.Errorf("Did not get correct type from NewRepo: got %s, wanted *Repository", reflect.TypeOf(testRepo).String())
+	}
 }
 
 func TestRepository_PostBooking(t *testing.T) {
-	
+	// rooms are available
+	requestBody := "start=2025-07-01"
+	requestBody = fmt.Sprintf("%s&%s", requestBody, "end=2025-07-02")
+	request, err := http.NewRequest("POST", "/booking", strings.NewReader(requestBody))
+	if err != nil {
+		t.Log(err)
+		t.Fatal(err)
+	}
+	context := getContext(request)
+	request = request.WithContext(context)
+	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	responseRecorder := httptest.NewRecorder()
+
+	handler := http.HandlerFunc(Repo.PostBooking)
+	handler.ServeHTTP(responseRecorder, request)
+
+	if responseRecorder.Code != http.StatusOK {
+		t.Errorf("PostBooking handler returned wrong response code: got %d, wanted %d", responseRecorder.Code, http.StatusOK)
+	}
+
+	// rooms are not available
+	requestBody = "start=2070-07-01"
+	requestBody = fmt.Sprintf("%s&%s", requestBody, "end=2070-07-02")
+	request, err = http.NewRequest("POST", "/booking", strings.NewReader(requestBody))
+	if err != nil {
+		t.Log(err)
+		t.Fatal(err)
+	}
+	context = getContext(request)
+	request = request.WithContext(context)
+	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	responseRecorder = httptest.NewRecorder()
+
+	handler.ServeHTTP(responseRecorder, request)
+
+	if responseRecorder.Code != http.StatusSeeOther {
+		t.Errorf("PostBooking handler returned wrong response code: got %d, wanted %d", responseRecorder.Code, http.StatusSeeOther)
+	}
+
+	// test with missing form body
+	request, err = http.NewRequest("POST", "/booking", nil)
+	if err != nil {
+		t.Log(err)
+		t.Fatal(err)
+	}
+	context = getContext(request)
+	request = request.WithContext(context)
+	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	responseRecorder = httptest.NewRecorder()
+
+	handler.ServeHTTP(responseRecorder, request)
+
+	if responseRecorder.Code != http.StatusTemporaryRedirect {
+		t.Errorf("PostBooking handler returned wrong response code: got %d, wanted %d", responseRecorder.Code, http.StatusTemporaryRedirect)
+	}
+
+	// test with invalid start date format
+	requestBody = "start=20250701"
+	requestBody = fmt.Sprintf("%s&%s", requestBody, "end=2025-07-02")
+	request, err = http.NewRequest("POST", "/booking", strings.NewReader(requestBody))
+	if err != nil {
+		t.Log(err)
+		t.Fatal(err)
+	}
+	context = getContext(request)
+	request = request.WithContext(context)
+	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	responseRecorder = httptest.NewRecorder()
+
+	handler.ServeHTTP(responseRecorder, request)
+
+	if responseRecorder.Code != http.StatusTemporaryRedirect {
+		t.Errorf("PostBooking handler returned wrong response code: got %d, wanted %d", responseRecorder.Code, http.StatusTemporaryRedirect)
+	}
+
+	// test with invalid end date format
+	requestBody = "start=2025-07-01"
+	requestBody = fmt.Sprintf("%s&%s", requestBody, "end=20250702")
+	request, err = http.NewRequest("POST", "/booking", strings.NewReader(requestBody))
+	if err != nil {
+		t.Log(err)
+		t.Fatal(err)
+	}
+	context = getContext(request)
+	request = request.WithContext(context)
+	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	responseRecorder = httptest.NewRecorder()
+
+	handler.ServeHTTP(responseRecorder, request)
+
+	if responseRecorder.Code != http.StatusTemporaryRedirect {
+		t.Errorf("PostBooking handler returned wrong response code: got %d, wanted %d", responseRecorder.Code, http.StatusTemporaryRedirect)
+	}
+
+	// test with failed searching due to database
+	requestBody = "start=2060-01-01"
+	requestBody = fmt.Sprintf("%s&%s", requestBody, "end=2025-07-02")
+	request, err = http.NewRequest("POST", "/booking", strings.NewReader(requestBody))
+	if err != nil {
+		t.Log(err)
+		t.Fatal(err)
+	}
+	context = getContext(request)
+	request = request.WithContext(context)
+	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	responseRecorder = httptest.NewRecorder()
+
+	handler.ServeHTTP(responseRecorder, request)
+
+	if responseRecorder.Code != http.StatusTemporaryRedirect {
+		t.Errorf("PostBooking handler returned wrong response code: got %d, wanted %d", responseRecorder.Code, http.StatusTemporaryRedirect)
+	}
 }
 
 func TestRepository_MakeReservation(t *testing.T) {
