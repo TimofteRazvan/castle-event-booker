@@ -4,6 +4,26 @@ A Go / Golang web app which is supposed to allow clients to book events at Corvi
 
 ![](https://github.com/TimofteRazvan/castle-event-booker/blob/main/static/images/home_page_1.png)
 
+<h2> How do I run this? </h2>
+
+Clone the repository.
+
+Rename database.yml.example to database.yml (ensure the contents do not get formatted in any way).
+
+Fill in database.yml with your postgres database information. Make sure to also change that information in main.go line 75, in the connection string (I'll make this easier later).
+
+Run this in your terminal for the migrations to take effect:
+
+```bash
+soda migrate
+```
+
+On the other hand, if the migrations failed at some point, you can roll back with:
+
+```bash
+soda migrate down
+```
+
 <h2> Tech Stack </h2>
 
 - Go v1.23
@@ -24,21 +44,6 @@ A Go / Golang web app which is supposed to allow clients to book events at Corvi
 - [SweetAlert2](https://github.com/sweetalert2/sweetalert2)
 - [Soda](https://github.com/gobuffalo/pop/v6/soda@latest)
 - [Pgx](https://github.com/jackc/pgx/) v5
-
-<h3> - Migrations: </h3>
-Rename database.yml.example to database.yml (ensure the contents do not get formatted in any way).
-
-Run this in your terminal for the migrations:
-
-```bash
-soda migrate
-```
-
-On the other hand, if the migrations failed at some point, you can roll back with:
-
-```bash
-soda migrate down
-```
 
 <h3> - Testing: </h3>
 Run this in your console to check for testing coverage in the directory you are in:
