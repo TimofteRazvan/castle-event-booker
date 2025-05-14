@@ -13,11 +13,17 @@ func (m *testDBRepo) AllUsers() bool {
 
 // InsertReservation inserts a reservation into the database
 func (m *testDBRepo) InsertReservation(res models.Reservation) (int, error) {
+	if res.RoomID == 99 {
+		return 0, errors.New("reservation: inexistent room ID")
+	}
 	return 1, nil
 }
 
 // InsertRoomRestriction inserts a room_restriction into the database
 func (m *testDBRepo) InsertRoomRestriction(rr models.RoomRestriction) error {
+	if rr.RoomID == 100 {
+		return errors.New("room restriction: inexistent room ID")
+	}
 	return nil
 }
 
