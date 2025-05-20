@@ -16,11 +16,6 @@ import (
 	"github.com/TimofteRazvan/castle-event-booker/internal/models"
 )
 
-type postData struct {
-	key   string
-	value string
-}
-
 var tests = []struct {
 	name               string
 	url                string
