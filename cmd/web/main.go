@@ -32,7 +32,20 @@ func main() {
 	}
 	defer db.SQL.Close()
 
-	fmt.Printf("Starting application of port %s\n", portNumber)
+	defer close(app.MailChan)
+	fmt.Println("Starting mail listener on port :1025")
+	listenForMail()
+
+	// msg := models.MailData{
+	// 	To:      "razvanhdt13@gmail.com",
+	// 	From:    "corvinul_bookings@gmail.com",
+	// 	Subject: "Your reservation was made!",
+	// 	Content: "",
+	// }
+
+	// app.MailChan <- msg
+
+	fmt.Printf("Starting application on port %s\n", portNumber)
 
 	srv := &http.Server{
 		Addr:    portNumber,
@@ -52,6 +65,9 @@ func run() (*driver.DB, error) {
 	gob.Register(models.Room{})
 	gob.Register(models.Restriction{})
 	gob.Register(models.Reservation{})
+
+	mailChan := make(chan models.MailData)
+	app.MailChan = mailChan
 
 	// change this to true when we're in production
 	app.InProduction = false
