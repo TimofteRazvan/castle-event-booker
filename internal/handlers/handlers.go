@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -386,6 +387,101 @@ func (m *Repository) PostMakeReservation(w http.ResponseWriter, r *http.Request)
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
+
+	// send notification to guest
+	htmlMsg := fmt.Sprintf(`
+	<!DOCTYPE html>
+	<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>Reservation Confirmation</title>
+		<style>
+			body { font-family: Arial, sans-serif; background-color: #f4f4f4; color: #333; padding: 20px; }
+			.container { max-width: 600px; margin: auto; background: #fff; padding: 20px; border-radius: 8px; }
+			h2 { color: #2c3e50; }
+			p { line-height: 1.6; }
+			.footer { margin-top: 30px; font-size: 0.9em; color: #888; }
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			<h2>Your Reservation was Confirmed!</h2>
+			<p>Dear %s,</p>
+			<p>Thank you for choosing Corvinul for your stay. We're happy to let you know that your reservation has been successfully confirmed.</p>
+			<p><strong>Reservation Details:</strong></p>
+			<ul>
+				<li><strong>Check-in:</strong> %s</li>
+				<li><strong>Check-out:</strong> %s</li>
+			</ul>
+			<p>If you have any questions or need to make changes to your reservation, feel free to contact us at <a href="mailto:corvinul_bookings@gmail.com">corvinul_bookings@gmail.com</a>.</p>
+			<p>We look forward to welcoming you!</p>
+			<p>Best regards,<br>The Corvinul Team</p>
+			<div class="footer">
+				<p>Corvinul Booking Service<br>corvinul_bookings@gmail.com</p>
+			</div>
+		</div>
+	</body>
+	</html>
+	`, reservation.FirstName, reservation.StartDate.Format("January 2, 2006"), reservation.EndDate.Format("January 2, 2006"))
+
+	msg := models.MailData{
+		To:      reservation.Email,
+		From:    "corvinul_bookings@gmail.com",
+		Subject: "Your reservation was confirmed!",
+		Content: htmlMsg,
+	}
+
+	m.App.MailChan <- msg
+
+	htmlMsg = fmt.Sprintf(`
+	<!DOCTYPE html>
+	<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>New Reservation Notification</title>
+		<style>
+			body { font-family: Arial, sans-serif; background-color: #f4f4f4; color: #333; padding: 20px; }
+			.container { max-width: 600px; margin: auto; background: #fff; padding: 20px; border-radius: 8px; }
+			h2 { color: #2c3e50; }
+			p { line-height: 1.6; }
+			ul { padding-left: 20px; }
+			.footer { margin-top: 30px; font-size: 0.9em; color: #888; }
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			<h2>New Reservation Received</h2>
+			<p>Hello Razvan,</p>
+			<p>You have received a new reservation for your property.</p>
+
+			<p><strong>Reservation Details:</strong></p>
+			<ul>
+				<li><strong>Guest Name:</strong> %s %s</li>
+				<li><strong>Email:</strong> %s</li>
+				<li><strong>Check-in:</strong> %s</li>
+				<li><strong>Check-out:</strong> %s</li>
+			</ul>
+
+			<p>Please make any necessary preparations and feel free to contact the guest if needed.</p>
+
+			<p>Best regards,<br>The Corvinul Booking Team</p>
+
+			<div class="footer">
+				<p>This is an automated message sent from Corvinul Booking Service.</p>
+			</div>
+		</div>
+	</body>
+	</html>
+`, reservation.FirstName, reservation.LastName, reservation.Email, reservation.StartDate.Format("January 2, 2006"), reservation.EndDate.Format("January 2, 2006"))
+
+	msg = models.MailData{
+		To:      "corvinul_bookings@gmail.com",
+		From:    "corvinul_bookings@gmail.com",
+		Subject: "A reservation has been made!",
+		Content: htmlMsg,
+	}
+
+	m.App.MailChan <- msg
 
 	m.App.Session.Put(r.Context(), "reservation", reservation)
 
