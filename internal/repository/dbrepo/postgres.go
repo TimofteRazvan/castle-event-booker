@@ -2,9 +2,11 @@ package dbrepo
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"github.com/TimofteRazvan/castle-event-booker/internal/models"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func (m *postgresDBRepo) AllUsers() bool {
@@ -126,7 +128,7 @@ func (m *postgresDBRepo) SearchAvailabilityByDateAllRooms(start, end time.Time) 
 }
 
 // GetRoomByID returns the room with the given ID
-func (m *postgresDBRepo) GetRoomByID(roomID int) (models.Room, error) {
+func (m *postgresDBRepo) GetRoomByID(id int) (models.Room, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
@@ -135,11 +137,90 @@ func (m *postgresDBRepo) GetRoomByID(roomID int) (models.Room, error) {
 			where id = $1`
 
 	var room models.Room
-	row := m.DB.QueryRowContext(ctx, query, roomID)
-	err := row.Scan(&room.ID, &room.RoomName, &room.CreatedAt, &room.UpdatedAt)
+	row := m.DB.QueryRowContext(ctx, query, id)
+	err := row.Scan(&room.ID,
+		&room.RoomName,
+		&room.CreatedAt,
+		&room.UpdatedAt)
 	if err != nil {
 		return room, err
 	}
 
 	return room, nil
+}
+
+// GetUserByID returns the user with the given ID
+func (m *postgresDBRepo) GetUserByID(userID int) (models.User, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	query := `select id, first_name, last_name, email, password, access_level, created_at, updated_at
+			from users
+			where id = $1`
+
+	row := m.DB.QueryRowContext(ctx, query, userID)
+	var u models.User
+	err := row.Scan(&u.ID,
+		&u.FirstName,
+		&u.LastName,
+		&u.Email,
+		&u.Password,
+		&u.AccessLevel,
+		&u.CreatedAt,
+		&u.UpdatedAt)
+	if err != nil {
+		return u, err
+	}
+
+	return u, nil
+}
+
+// UpdateUser updates a user in the database
+func (m *postgresDBRepo) UpdateUser(u models.User) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	query := `update users
+			set first_name=$1, last_name=$2, email=$3, access_level=$4, updated_at=$5`
+
+	_, err := m.DB.ExecContext(ctx, query,
+		u.FirstName,
+		u.LastName,
+		u.Email,
+		u.AccessLevel,
+		u.UpdatedAt)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// Authenticate authenticates a user by checking the testPassword's hash against the stored hash
+func (m *postgresDBRepo) Authenticate(email, testPassword string) (int, string, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	var id int
+	var hashedPassword string
+
+	query := `select id, password
+			from users
+			where email=$1`
+
+	row := m.DB.QueryRowContext(ctx, query, email)
+	err := row.Scan(&id, &hashedPassword)
+	if err != nil {
+		return id, "", err
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(testPassword))
+	if err == bcrypt.ErrMismatchedHashAndPassword {
+		return 0, "", errors.New("incorrect password")
+	} else if err != nil {
+		return 0, "", err
+	}
+
+	return id, hashedPassword, nil
 }

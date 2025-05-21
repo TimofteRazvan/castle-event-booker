@@ -100,3 +100,15 @@ func (m *testDBRepo) GetRoomByID(roomID int) (models.Room, error) {
 
 	return room, nil
 }
+
+func (m *testDBRepo) GetUserByID(userID int) (models.User, error) {
+	return models.User{}, nil
+}
+
+func (m *testDBRepo) UpdateUser(u models.User) error {
+	return nil
+}
+
+func (m *testDBRepo) Authenticate(email, testPassword string) (int, string, error) {
+	return 0, "", nil
+}
