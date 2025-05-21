@@ -541,9 +541,12 @@ func (m *Repository) PostLogin(w http.ResponseWriter, r *http.Request) {
 
 	form := forms.New(r.PostForm)
 	form.Required("email", "password")
+	form.IsEmail("email")
+
 	if !form.Valid() {
-		m.App.Session.Put(r.Context(), "error", "Invalid email and/or password. Please try again.")
-		http.Redirect(w, r, "/login/user", http.StatusTemporaryRedirect)
+		render.Template(w, r, "login.page.tmpl", &models.TemplateData{
+			Form: form,
+		})
 		return
 	}
 
