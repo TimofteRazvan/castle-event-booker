@@ -561,3 +561,10 @@ func (m *Repository) PostLogin(w http.ResponseWriter, r *http.Request) {
 	m.App.Session.Put(r.Context(), "flash", "Welcome!")
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
+
+// Logout is the logout page handler
+func (m *Repository) Logout(w http.ResponseWriter, r *http.Request) {
+	_ = m.App.Session.Destroy(r.Context())
+	_ = m.App.Session.RenewToken(r.Context())
+	http.Redirect(w, r, "/user/login", http.StatusSeeOther)
+}
