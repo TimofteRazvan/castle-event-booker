@@ -32,7 +32,7 @@ soda migrate down
 - JavaScript
 - PostgreSQL
 
-<h3> - External Dependencies: </h3>
+<h3> External Dependencies: </h3>
 
 - [Chi Router](https://github.com/go-chi/chi/v5) v5.1.0
 - [NoSurf](https://github.com/justinas/nosurf) v1.1.1
@@ -64,3 +64,7 @@ Run this in cmd terminal (Windows) to run the app
 ```bash
 run.bat
 ```
+
+<h2> Other Thanks: <h2>
+
+[Royalty-free Admin Dashboard by BootstrapDash](https://github.com/BootstrapDash/RoyalUI-Free-Bootstrap-Admin-Template)
