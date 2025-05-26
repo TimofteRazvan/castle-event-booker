@@ -65,6 +65,6 @@ Run this in cmd terminal (Windows) to run the app
 run.bat
 ```
 
-<h2> Other Thanks: <h2>
+<h3> Other Thanks: <h3>
 
-[Royalty-free Admin Dashboard by BootstrapDash](https://github.com/BootstrapDash/RoyalUI-Free-Bootstrap-Admin-Template)
+- [Royalty-free Admin Dashboard by BootstrapDash](https://github.com/BootstrapDash/RoyalUI-Free-Bootstrap-Admin-Template)
