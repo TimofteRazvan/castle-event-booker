@@ -6,6 +6,7 @@ import (
 	"html/template"
 	"net/http"
 	"path/filepath"
+	"time"
 
 	"github.com/TimofteRazvan/castle-event-booker/internal/config"
 	"github.com/TimofteRazvan/castle-event-booker/internal/models"
@@ -15,9 +16,16 @@ import (
 var pageTmplPath = "./templates/*.page.tmpl"
 var layoutTmplPath = "./templates/*.layout.tmpl"
 
-var functions = template.FuncMap{}
+var functions = template.FuncMap{
+	"simplifyDate": SimplifyDate,
+}
 
 var app *config.AppConfig
+
+// SimplifyDate returns time in YYYY-MM-DD format
+func SimplifyDate(t time.Time) string {
+	return t.Format("2006-01-02")
+}
 
 // NewRenderer sets the config for the template package
 func NewRenderer(a *config.AppConfig) {

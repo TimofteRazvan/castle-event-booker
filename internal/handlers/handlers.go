@@ -578,7 +578,19 @@ func (m *Repository) AdminReservationsNew(w http.ResponseWriter, r *http.Request
 }
 
 func (m *Repository) AdminReservationsAll(w http.ResponseWriter, r *http.Request) {
-	render.Template(w, r, "admin-reservations-all.page.tmpl", &models.TemplateData{})
+	reservations, err := m.DB.AllReservations()
+	if err != nil {
+		m.App.Session.Put(r.Context(), "error", "Fetching reservations failed. Please try again.")
+		http.Redirect(w, r, "/admin/dashboard", http.StatusTemporaryRedirect)
+		return
+	}
+
+	data := make(map[string]interface{})
+	data["reservations"] = reservations
+
+	render.Template(w, r, "admin-reservations-all.page.tmpl", &models.TemplateData{
+		Data: data,
+	})
 }
 
 func (m *Repository) AdminReservationsCalendar(w http.ResponseWriter, r *http.Request) {
