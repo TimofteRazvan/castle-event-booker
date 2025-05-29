@@ -569,14 +569,29 @@ func (m *Repository) Logout(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/user/login", http.StatusSeeOther)
 }
 
+// AdminDashboard is the handler for the admin dashboard page
 func (m *Repository) AdminDashboard(w http.ResponseWriter, r *http.Request) {
 	render.Template(w, r, "admin-dashboard.page.tmpl", &models.TemplateData{})
 }
 
+// AdminReservationsNew is the new reservations page handler for the admin dashboard
 func (m *Repository) AdminReservationsNew(w http.ResponseWriter, r *http.Request) {
-	render.Template(w, r, "admin-reservations-new.page.tmpl", &models.TemplateData{})
+	reservations, err := m.DB.NewReservations()
+	if err != nil {
+		m.App.Session.Put(r.Context(), "error", "Fetching reservations failed. Please try again.")
+		http.Redirect(w, r, "/admin/dashboard", http.StatusTemporaryRedirect)
+		return
+	}
+
+	data := make(map[string]interface{})
+	data["reservations"] = reservations
+
+	render.Template(w, r, "admin-reservations-new.page.tmpl", &models.TemplateData{
+		Data: data,
+	})
 }
 
+// AdminReservationsAll is the all reservations page handler for the admin dashboard
 func (m *Repository) AdminReservationsAll(w http.ResponseWriter, r *http.Request) {
 	reservations, err := m.DB.AllReservations()
 	if err != nil {
@@ -593,6 +608,7 @@ func (m *Repository) AdminReservationsAll(w http.ResponseWriter, r *http.Request
 	})
 }
 
+// AdminReservationsCalendar is the reservations calendar page handler for the admin dashboard
 func (m *Repository) AdminReservationsCalendar(w http.ResponseWriter, r *http.Request) {
 	render.Template(w, r, "admin-reservations-calendar.page.tmpl", &models.TemplateData{})
 }
