@@ -578,7 +578,7 @@ func (m *Repository) AdminDashboard(w http.ResponseWriter, r *http.Request) {
 func (m *Repository) AdminReservationsNew(w http.ResponseWriter, r *http.Request) {
 	reservations, err := m.DB.NewReservations()
 	if err != nil {
-		m.App.Session.Put(r.Context(), "error", "Fetching reservations failed. Please try again.")
+		m.App.Session.Put(r.Context(), "error", "Fetching reservations failed.")
 		http.Redirect(w, r, "/admin/dashboard", http.StatusTemporaryRedirect)
 		return
 	}
@@ -595,7 +595,7 @@ func (m *Repository) AdminReservationsNew(w http.ResponseWriter, r *http.Request
 func (m *Repository) AdminReservationsAll(w http.ResponseWriter, r *http.Request) {
 	reservations, err := m.DB.AllReservations()
 	if err != nil {
-		m.App.Session.Put(r.Context(), "error", "Fetching reservations failed. Please try again.")
+		m.App.Session.Put(r.Context(), "error", "Fetching reservations failed.")
 		http.Redirect(w, r, "/admin/dashboard", http.StatusTemporaryRedirect)
 		return
 	}
@@ -611,4 +611,35 @@ func (m *Repository) AdminReservationsAll(w http.ResponseWriter, r *http.Request
 // AdminReservationsCalendar is the reservations calendar page handler for the admin dashboard
 func (m *Repository) AdminReservationsCalendar(w http.ResponseWriter, r *http.Request) {
 	render.Template(w, r, "admin-reservations-calendar.page.tmpl", &models.TemplateData{})
+}
+
+// AdminShowReservation is the individual reservation page handler for the admin dashboard
+func (m *Repository) AdminShowReservation(w http.ResponseWriter, r *http.Request) {
+	splitURI := strings.Split(r.RequestURI, "/")
+	id, err := strconv.Atoi(splitURI[4])
+	if err != nil {
+		m.App.Session.Put(r.Context(), "error", "URI error. Alphanumeric to integer conversion failed.")
+		http.Redirect(w, r, "/admin/dashboard", http.StatusTemporaryRedirect)
+		return
+	}
+
+	src := splitURI[3]
+	stringMap := make(map[string]string)
+	stringMap["src"] = src
+
+	reservation, err := m.DB.GetReservationById(id)
+	if err != nil {
+		m.App.Session.Put(r.Context(), "error", "Fetching reservation failed.")
+		http.Redirect(w, r, "/admin/dashboard", http.StatusTemporaryRedirect)
+		return
+	}
+
+	data := make(map[string]interface{})
+	data["reservation"] = reservation
+
+	render.Template(w, r, "admin-reservations-show.page.tmpl", &models.TemplateData{
+		StringMap: stringMap,
+		Data:      data,
+		Form:      forms.New(nil),
+	})
 }
