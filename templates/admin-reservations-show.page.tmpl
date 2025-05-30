@@ -15,7 +15,7 @@
         </p>
 
         <form method="POST" action="/admin/reservations/{{$src}}/{{$reservation.ID}}" class="" novalidate>
-                <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+            <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
                 <div class="form-group mt-5">
                     <label for="first_name">First Name:</label>
                     {{with .Form.Errors.Get "first_name"}}
@@ -54,8 +54,8 @@
 
                 <hr>
 
-                <input type="submit" class="btn btn-primary" value="Save">
-                <a href="/admin/reservations-{{$src}}" class="btn btn-warning">Cancel</a>
-            </form>
+            <input type="submit" class="btn btn-primary" value="Save">
+            <a href="/admin/reservations-{{$src}}" class="btn btn-warning">Cancel</a>
+        </form>
     </div>
 {{end}}

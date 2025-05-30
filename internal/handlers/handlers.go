@@ -643,3 +643,46 @@ func (m *Repository) AdminShowReservation(w http.ResponseWriter, r *http.Request
 		Form:      forms.New(nil),
 	})
 }
+
+// AdminPostShowReservation handles updating the reservation in the admin dashboard
+func (m *Repository) AdminPostShowReservation(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseForm()
+	if err != nil {
+		m.App.Session.Put(r.Context(), "error", "Could not parse form.")
+		http.Redirect(w, r, "/admin/dashboard", http.StatusTemporaryRedirect)
+		return
+	}
+
+	splitURI := strings.Split(r.RequestURI, "/")
+	id, err := strconv.Atoi(splitURI[4])
+	if err != nil {
+		m.App.Session.Put(r.Context(), "error", "URI error. Alphanumeric to integer conversion failed.")
+		http.Redirect(w, r, "/admin/dashboard", http.StatusTemporaryRedirect)
+		return
+	}
+
+	src := splitURI[3]
+	stringMap := make(map[string]string)
+	stringMap["src"] = src
+
+	reservation, err := m.DB.GetReservationById(id)
+	if err != nil {
+		m.App.Session.Put(r.Context(), "error", "Fetching reservation failed.")
+		http.Redirect(w, r, "/admin/dashboard", http.StatusTemporaryRedirect)
+		return
+	}
+
+	reservation.FirstName = r.Form.Get("first_name")
+	reservation.LastName = r.Form.Get("last_name")
+	reservation.Email = r.Form.Get("email")
+	reservation.Phone = r.Form.Get("phone")
+	err = m.DB.UpdateReservation(reservation)
+	if err != nil {
+		m.App.Session.Put(r.Context(), "error", "Updating reservation failed.")
+		http.Redirect(w, r, "/admin/dashboard", http.StatusTemporaryRedirect)
+		return
+	}
+
+	m.App.Session.Put(r.Context(), "flash", "Reservation updated!")
+	http.Redirect(w, r, fmt.Sprintf("/admin/reservations-%s", src), http.StatusSeeOther)
+}

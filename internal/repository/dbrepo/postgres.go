@@ -181,14 +181,16 @@ func (m *postgresDBRepo) UpdateUser(u models.User) error {
 	defer cancel()
 
 	query := `update users
-			set first_name=$1, last_name=$2, email=$3, access_level=$4, updated_at=$5`
+			set first_name=$1, last_name=$2, email=$3, access_level=$4, updated_at=$5
+			where id=$6`
 
 	_, err := m.DB.ExecContext(ctx, query,
 		u.FirstName,
 		u.LastName,
 		u.Email,
 		u.AccessLevel,
-		u.UpdatedAt)
+		u.UpdatedAt,
+		u.ID)
 
 	if err != nil {
 		return err
@@ -369,14 +371,16 @@ func (m *postgresDBRepo) UpdateReservation(reservation models.Reservation) error
 	defer cancel()
 
 	query := `update reservations
-			set first_name=$1, last_name=$2, email=$3, phone=$4, updated_at=$5`
+			set first_name=$1, last_name=$2, email=$3, phone=$4, updated_at=$5
+			where id=$6`
 
 	_, err := m.DB.ExecContext(ctx, query,
 		reservation.FirstName,
 		reservation.LastName,
 		reservation.Email,
 		reservation.Phone,
-		reservation.UpdatedAt)
+		reservation.UpdatedAt,
+		reservation.ID)
 
 	if err != nil {
 		return err
